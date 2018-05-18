@@ -2,7 +2,9 @@ import React from 'react'
 import { baseUrl } from "../../../fetch/fetch";
 
 const Comments = (props)=>{
-    let comments = props.comments
+    console.log(props.page)
+    let commentsLength = props.comments.length
+    let comments = props.comments.slice((props.page - 1) * 5, props.page * 5)
     let commentList = comments.map((val)=>(
         <li key={val.id}>
             <Avator {...val} />
@@ -15,7 +17,7 @@ const Comments = (props)=>{
     ))
     return (
         <section className="video_comments">
-            <h3>评论({comments.length})</h3>
+            <h3>评论({commentsLength})</h3>
             <ul id="ul">
                 {commentList}
             </ul>

@@ -27,10 +27,10 @@ class Home extends Component {
         return (
             <div className="home" >
                 <Footer path="home" />
-                <List videoList={this.state.videoList} idx={0} name="全部" link="all" />
-                <List videoList={this.state.videoList} idx={1} name="电影" link="movie" />
-                <List videoList={this.state.videoList} idx={2} name="电视剧" link="tv" />
-                <List videoList={this.state.videoList} idx={3} name="综艺" link="zy" />
+                <List videoList={this.state.videoList} idx={3} name="全部" link="all" />
+                <List videoList={this.state.videoList} idx={0} name="电影" link="movie" />
+                <List videoList={this.state.videoList} idx={1} name="电视剧" link="tv" />
+                <List videoList={this.state.videoList} idx={2} name="综艺" link="zy" />
             </div>
         );
     }

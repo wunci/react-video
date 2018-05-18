@@ -2,12 +2,23 @@ import React from 'react'
 import { baseUrl } from "../../../fetch/fetch";
 import Comments from "./Comments";
 import history from 'history/createHashHistory'
-
+const LinkBtn = (props)=>{
+    console.log(props.isLike)
+    let handleSelLike = props.selLike
+    return (
+        <section className="like_list">
+            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('1') } : null} 
+                className={'like '+ (props.isLike ? (props.isLike === '1' ? 'like_active' : 'likeDisable') : '')}>喜欢</div>
+            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('2') } : null} 
+                className={'like '+ (props.isLike ? (props.isLike === '2' ? 'like_active' : 'likeDisable') : '')}>不喜欢</div>
+        </section>
+    )
+}
 const VideoDetail = (props) => {
     let detail = props.detail && props.detail[0][0]
     let star = props.detail && props.detail[1][0]['count(*)']
     console.log('star',star)
-    console.log(detail)
+    console.log('page', props.page)
     if (detail){
         return (
             <div>
@@ -41,10 +52,7 @@ const VideoDetail = (props) => {
                         <p>{ detail.actors }</p>
                     </div>
                 </section>
-                <section className="like_list">
-                    <div className="like">喜欢</div>
-                    <div className="like">不喜欢</div>
-                </section>
+                <LinkBtn isLike={props.isLike} userName={props.userName} selLike={props.selLike}  />
                 <section className="video_about"> 
                     <h3>{ detail.name }的剧情简介</h3>
                     <p>
@@ -53,10 +61,10 @@ const VideoDetail = (props) => {
                 </section>
                 
                 <section className="fixed_comment">
-                    <input type="text" name="comment" placeholder="评论" />
-                    <button>评论</button>
+                    <input type="text" name="comment" onChange={(e)=>(props.handleCommentInput(e))} placeholder="评论" />
+                    <button onClick={(e)=>(props.postComment(e))}>评论</button>
                 </section>
-                <Comments comments={props.comments} />
+                <Comments comments={props.comments} page={props.page} />
             </div>
 
         )

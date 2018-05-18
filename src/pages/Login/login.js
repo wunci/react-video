@@ -40,7 +40,7 @@ class Login extends Component{
             [target.name]: target.value
         })
     }
-    $message(data = {icon:'success',message:'123'}){
+    $message(data = {icon:'success',message:''}){
         this.setState({
             toast: {
                 isShow: true,
