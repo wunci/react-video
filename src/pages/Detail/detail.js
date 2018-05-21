@@ -70,10 +70,12 @@ class Detail extends Component{
                 icon: 'fail',
                 message: e.message
             })
-            if (e.code === 404) setTimeout(() => {
-                this.props.history.push('/login')
-            }, 1500);
-            localStorage.clear()
+            if (e.code === 404) {
+                setTimeout(() => {
+                    this.props.history.push('/login')
+                }, 1500);
+                localStorage.clear()
+            }
             
         })
     }
@@ -90,7 +92,7 @@ class Detail extends Component{
      * 用户评论点击
      */
     postComment() {
-        let {commentVal,videoDetail,videoId,userName} = this.state
+        let {commentVal,videoDetail,videoId,userName,videoComment} = this.state
         let {name} = videoDetail[0][0]
         let avator = localStorage.getItem('avator')
         if (commentVal.trim() === ''){
@@ -104,16 +106,56 @@ class Detail extends Component{
             this.$message({
                 message: '评论成功'
             })
+            videoComment.push({
+                id: +new Date(),
+                userName,
+                date: this.date('yyyy-MM-dd hh:mm:ss'),
+                "content": commentVal,
+                avator
+            });
+            console.log(this.date('yyyy-MM-dd hh:mm:ss'))
+            this.goPage(Math.ceil(videoComment.length / 5))
+            
+            this.setState((prevState) => ({
+                videoComment,
+                commentVal:''
+            }))
+
+            var scrollHeight = document.documentElement.scrollHeight;
+            console.log(scrollHeight)
+            window.scrollTo(0, scrollHeight);
+            // this.$nextTick(() => {
+            //     this.scrollToBottom()
+            // })
         }).catch(e=>{
             this.$message({
                 icon: 'fail',
                 message: e.message
             })
-            if (e.code === 404) setTimeout(() => {
-                this.props.history.push('/login')
-            }, 1500);
-            localStorage.clear()
+            if (e.code === 404) {
+                setTimeout(() => {
+                    this.props.history.push('/login')
+                }, 1500);
+                localStorage.clear()
+            }
         })
+    }
+    date(fmt) {
+        let date = new Date()
+         var o = {
+             "M+": date.getMonth() + 1, //月份
+             "d+": date.getDate(), //日
+             "h+": date.getHours(), //小时
+             "m+": date.getMinutes(), //分
+             "s+": date.getSeconds(), //秒
+             "q+": Math.floor((date.getMonth() + 3) / 3), //季度
+             "S": date.getMilliseconds() //毫秒
+         };
+         if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
+         for (var k in o)
+             if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+         return fmt;
+        
     }
     goPage(page){
         this.setState({
@@ -147,7 +189,7 @@ class Detail extends Component{
         }, 1500);
     }
     render(){
-        let {iLike,videoDetail,videoComment,userName,page} = this.state
+        let {iLike,videoDetail,videoComment,userName,page,commentVal} = this.state
         let {icon,isShow,message} = this.state.toast
         
         return (
@@ -160,6 +202,7 @@ class Detail extends Component{
                     goBack={()=>(this.props.history.goBack())} 
                     detail={videoDetail}
                     comments={videoComment} 
+                    commentVal={commentVal}
                     handleCommentInput={(e)=>(this.handleCommentInput(e))}
                     postComment={this.postComment}
                     page={page}

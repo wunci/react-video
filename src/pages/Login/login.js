@@ -22,6 +22,12 @@ class Login extends Component{
         this.changeYzm = this.changeYzm.bind(this)
     }
     componentWillMount(){
+        let {user} = localStorage
+        
+        if (user && user !== '') {
+            this.props.history.push('/me')
+            return
+        }
         this.changeYzm()
     }
     changeYzm(){

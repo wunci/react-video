@@ -1,10 +1,12 @@
 import React from 'react'
 
-const Comments = (props) => {
-    let comments = props.comments
+const Comments = ({comments,start,move,end,deleteComment}) => {
     let items = comments && comments.map(val=>(
-        <li key={val.id}>
-            <section className="commentWrap">
+        <li key={val.id} >
+            <section className="commentWrap" 
+                onTouchStart={(e)=>(start(e))}
+                onTouchMove={(e)=>(move(e))}
+                onTouchEnd={(e)=>(end(e))}>
                 <h5>影片：{val.videoName}</h5>
                 <section>
                     <span>评论：</span>
@@ -12,7 +14,7 @@ const Comments = (props) => {
                 </section>
                 <div className="time">{val.date}</div>
             </section>
-            <div className="delete">删除</div>
+            <div className="delete" onClick={(e)=>(deleteComment(val.id,e))}>删除</div>
         </li> 
     ))
     return(

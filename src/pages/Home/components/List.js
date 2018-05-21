@@ -12,7 +12,7 @@ export const List = (props) => {
     return (
         <section className="video_list">
             <div className="video_list_header">
-                <h3>{props.name}<span>{list[idx]&&list[idx].length}</span></h3>
+                <h3>{props.name}<span>({list[idx]&&list[idx].length})</span></h3>
                 <Link to={props.link}>更多 <i className="iconfont icon-jiantouyou"></i></Link>   
             </div>
             <ul>

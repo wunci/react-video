@@ -25,17 +25,17 @@ const Comments = (props)=>{
         
     )
 }
-const Avator = (props)=>{
-    if (props.avator !== '') {
+const Avator = ({avator,userName})=>{
+    if (avator !== '') {
         return (
             <div className="avator">
-                <img src={baseUrl+'/images/avator/'+ props.avator +'.png' } alt="" />
+                <img src={baseUrl+'/images/avator/'+ avator +'.png' } alt="" />
             </div>
         )
     }else{
         return (
             <div className="avator">
-                {props.userName.charAt(0)}
+                {userName.charAt(0)}
             </div>
         )
     }

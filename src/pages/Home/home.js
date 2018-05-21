@@ -4,6 +4,10 @@ import { initHome } from '../../fetch/fetch'
 // import {Link} from 'react-router-dom'
 import {List} from './components/List'
 import Footer from '../../common/Footer'
+import { connect } from 'react-redux'
+import { saveAllVideo } from "../store/action";
+// import {videoList} from '../store/reducer'
+import {bindActionCreators} from 'redux'
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -16,6 +20,8 @@ class Home extends Component {
             this.setState({
                 videoList: res.data
             })
+            this.props.saveAllVideo(res.data)
+            console.log(this.props.allVideoList)
         })
     }
     componentWillUnmount() {
@@ -36,4 +42,20 @@ class Home extends Component {
     }
 
 }
-export default Home
+
+function mapStateToProps(state) {
+    return {
+        allVideoList: state.videoList
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        saveAllVideo: bindActionCreators(saveAllVideo, dispatch),
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Home)

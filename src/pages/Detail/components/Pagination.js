@@ -4,11 +4,11 @@ const Pagination = (props) =>{
     let commentLength = Math.ceil(commentsPageLength/5)
     return (
         <section className="page">
-                {commentsPageLength > 1 && page > 1 ? <div onClick={()=>(goPage(1))} >首页</div> : '' }
-                {page >= 2 ? <div onClick={()=>(prevPage())} >上一页</div> : '' }
-                {  page < commentLength ? <div onClick={()=>(nextPage())}  >下一页</div> : ''}
-                {page < commentLength ? <div onClick={()=>(goPage(commentLength))} >尾页</div> : ''}
-                {commentLength >= 1 ? <div className="pageNum">{page+ '/' + commentLength}页</div> : '' }
+            {commentsPageLength > 1 && page > 1 ? <div onClick={()=>(goPage(1))} >首页</div> : '' }
+            {page >= 2 ? <div onClick={()=>(prevPage())} >上一页</div> : '' }
+            {  page < commentLength ? <div onClick={()=>(nextPage())}  >下一页</div> : ''}
+            {page < commentLength ? <div onClick={()=>(goPage(commentLength))} >尾页</div> : ''}
+            {commentLength >= 1 ? <div className="pageNum">{page+ '/' + commentLength}页</div> : '' }
          </section>
     )
 }

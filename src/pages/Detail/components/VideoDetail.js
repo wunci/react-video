@@ -1,7 +1,6 @@
 import React from 'react'
 import { baseUrl } from "../../../fetch/fetch";
 import Comments from "./Comments";
-import history from 'history/createHashHistory'
 const LinkBtn = (props)=>{
     console.log(props.isLike)
     let handleSelLike = props.selLike
@@ -61,7 +60,7 @@ const VideoDetail = (props) => {
                 </section>
                 
                 <section className="fixed_comment">
-                    <input type="text" name="comment" onChange={(e)=>(props.handleCommentInput(e))} placeholder="评论" />
+                    <input type="text" name="comment" value={props.commentVal} onChange={(e)=>(props.handleCommentInput(e))} placeholder="评论" />
                     <button onClick={(e)=>(props.postComment(e))}>评论</button>
                 </section>
                 <Comments comments={props.comments} page={props.page} />
