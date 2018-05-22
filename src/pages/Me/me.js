@@ -2,11 +2,12 @@ import React,{Component} from 'react'
 import {getAvator,editNameData,uploadAvator,meDelete,meLike,meComment} from '../../fetch/fetch'
 import "../Home/home.less";
 import './me.less'
-import Toast from "../../common/Toast";
+import Toast from "../../common/Toast/Toast";
 import Comments from './components/Comments'
 import Header from './components/Header'
 import VideoList from './components/VideoList'
-import Footer from '../../common/Footer'
+import Footer from '../../common/Footer/Footer'
+import Loading from '../../common/Loading/Loading'
 
 class Me extends Component{
     constructor(props){
@@ -21,7 +22,8 @@ class Me extends Component{
                 icon: ''
             },
             editNameVal:'',
-            isEdit:false
+            isEdit:false,
+            loadDone:false
         }
         this.touchStart = this.touchStart.bind(this)
         this.touchMove = this.touchMove.bind(this)
@@ -32,14 +34,14 @@ class Me extends Component{
         this.handleUserNameInput = this.handleUserNameInput.bind(this)
         this.uploadAvator = this.uploadAvator.bind(this)
     }
-    async componentWillMount(){
+    async componentDidMount() {
         let {user,avator} = localStorage
         if (!user || user === '') {
             this.props.history.push('/login')   
             return         
         }
         // 获取头像
-        getAvator(user).then(res=>{
+        await getAvator(user).then(res=>{
             console.log(res.avator)
             this.setState({
                 user,
@@ -47,16 +49,19 @@ class Me extends Component{
             })
         })
         // 获取个人喜欢列表
-        meLike(user).then(res => {
+        await meLike(user).then(res => {
             this.setState({
                 videoList:res.data
             })
         })
         // 获取个人评论
-        meComment(user).then(res => {
+        await meComment(user).then(res => {
             this.setState({
                 comments: res.data
             })
+        })
+        this.setState({
+            loadDone: true
         })
         console.log(avator)
     }
@@ -246,7 +251,7 @@ class Me extends Component{
         }, 1500);
     }
     render(){
-        let {avator,user,videoList,comments,isEdit,editNameVal} = this.state
+        let {avator,user,videoList,comments,isEdit,editNameVal,loadDone} = this.state
         let {icon,isShow,message} = this.state.toast
         
         return (
@@ -265,6 +270,7 @@ class Me extends Component{
                             upload={this.uploadAvator}
                             logout={this.logout.bind(this)}
                         />
+                        <Loading loading={loadDone} />
                         <VideoList videoList={videoList} idx="0" />
                         <VideoList videoList={videoList} idx="1" />
                         <Comments

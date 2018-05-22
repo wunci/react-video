@@ -2,8 +2,9 @@ import React, {Component} from "react";
 import './detail.less'
 import { singleVideoData,getVideoComment,getInitVideoLikeData,postVideoLikeData,reportComment } from '../../fetch/fetch'
 import VideoDetail from './components/VideoDetail'
-import Toast from "../../common/Toast";
+import Toast from "../../common/Toast/Toast";
 import Pagination from "./components/Pagination";
+import Loading from '../../common/Loading/Loading'
 
 class Detail extends Component{
     constructor(props){
@@ -18,7 +19,8 @@ class Detail extends Component{
                 icon: ''
             },
             commentVal:'',
-            page:1
+            page:1,
+            loadDone:false
         }
         console.log(this.props.match.params.id)
         this.handleSelLike = this.handleSelLike.bind(this)
@@ -28,11 +30,13 @@ class Detail extends Component{
         this.nextPage = this.nextPage.bind(this)
         this.prevPage = this.prevPage.bind(this)
     }
-    async componentWillMount() {
+    async componentDidMount() {
         let videoDetail
         let {videoId,userName} = this.state
         await singleVideoData(videoId).then(res=>{
             videoDetail = res.data
+            console.log('singleVideoData')
+            
         })
         await getVideoComment(videoId).then(res => {
             this.setState({
@@ -40,6 +44,8 @@ class Detail extends Component{
                 videoDetail
                 
             })
+            console.log('getVideoComment')
+            
         })
         await getInitVideoLikeData(videoId,userName).then(res=>{
             console.log(res.data[0])
@@ -48,7 +54,15 @@ class Detail extends Component{
                     iLike: res.data[0].iLike
                 })
             }
+            console.log('getInitVideoLikeData')
+            
         })
+        console.log('loaddone')
+        setTimeout(() => {
+            this.setState({
+                loadDone: true
+            })
+        }, 500);
     }
     /**
      * 处理用户点击喜欢和不喜欢按钮
@@ -189,11 +203,12 @@ class Detail extends Component{
         }, 1500);
     }
     render(){
-        let {iLike,videoDetail,videoComment,userName,page,commentVal} = this.state
+        let {iLike,videoDetail,videoComment,userName,page,commentVal,loadDone} = this.state
         let {icon,isShow,message} = this.state.toast
         
         return (
             <div className="detail">
+                <Loading loading={loadDone} />
                 <Toast icon={icon} message={message} isShow={isShow} />
                 <VideoDetail
                     selLike={this.handleSelLike}  

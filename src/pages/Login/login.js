@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {baseUrl,yzmChange,signin} from '../../fetch/fetch'
 import './login.less'
-import Toast from "../../common/Toast";
-import Footer from '../../common/Footer'
+import Toast from "../../common/Toast/Toast";
+import Footer from '../../common/Footer/Footer'
 class Login extends Component{
     constructor(props){
         super(props)
@@ -21,7 +21,7 @@ class Login extends Component{
         this.inputChange = this.inputChange.bind(this)
         this.changeYzm = this.changeYzm.bind(this)
     }
-    componentWillMount(){
+    componentDidMount() {
         let {user} = localStorage
         
         if (user && user !== '') {

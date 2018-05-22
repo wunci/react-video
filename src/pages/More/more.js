@@ -12,7 +12,7 @@ class More extends Component {
         console.log(this.props.match)
         console.log(this.props.allVideoList)
     }
-    componentWillMount(){
+    componentDidMount() {
          if (Object.keys(this.props.allVideoList).length === 0) {
              initHome().then(res => {
                  this.props.saveAllVideo(res.data)

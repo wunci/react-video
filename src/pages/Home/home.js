@@ -3,40 +3,46 @@ import './home.less'
 import { initHome } from '../../fetch/fetch'
 // import {Link} from 'react-router-dom'
 import {List} from './components/List'
-import Footer from '../../common/Footer'
+import Footer from '../../common/Footer/Footer'
 import { connect } from 'react-redux'
 import { saveAllVideo } from "../store/action";
-// import {videoList} from '../store/reducer'
 import {bindActionCreators} from 'redux'
+import Loading from '../../common/Loading/Loading'
 class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            videoList: []
+            videoList: [],
+            loadDone:false
         };
     }
-    componentDidMount() {
-        initHome().then(res=>{
+    async componentDidMount() {
+        await initHome().then(res=>{
             this.setState({
-                videoList: res.data
+                videoList: res.data,
             })
             this.props.saveAllVideo(res.data)
             console.log(this.props.allVideoList)
         })
+        setTimeout(() => {
+            this.setState({
+                loadDone: true
+            })
+        }, 500);
     }
     componentWillUnmount() {
         
     }
     render() {
-        // let videoList1 = this.state.videoList[0]
         // console.log('videoList',this.state.videoList[0])
         return (
             <div className="home" >
+                <Loading loading={this.state.loadDone} />
                 <Footer path="home" />
-                <List videoList={this.state.videoList} idx={3} name="全部" link="all" />
-                <List videoList={this.state.videoList} idx={0} name="电影" link="movie" />
-                <List videoList={this.state.videoList} idx={1} name="电视剧" link="tv" />
-                <List videoList={this.state.videoList} idx={2} name="综艺" link="zy" />
+                <List videoList={this.state.videoList} idx={3} name="全部" link="/all" />
+                <List videoList={this.state.videoList} idx={0} name="电影" link="/movie" />
+                <List videoList={this.state.videoList} idx={1} name="电视剧" link="/tv" />
+                <List videoList={this.state.videoList} idx={2} name="综艺" link="/zy" />
             </div>
         );
     }
