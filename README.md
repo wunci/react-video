@@ -19,7 +19,7 @@ vue版
 
 > 项目还在完善，基本功能已经实现，正在进行持续优化 
 
-`react` + `react-router-dom` + `redux` + `webpack` + `axios` + `less` + `flex` + `svg` + `阿里字体图标`
+`react` + `react-router` + `redux` + `webpack` + `axios` + `less` + `flex` + `svg` + `阿里字体图标`
 
 ## 运行
 
