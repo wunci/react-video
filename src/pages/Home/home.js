@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import { saveAllVideo } from "../store/action";
 import {bindActionCreators} from 'redux'
 import Loading from '../../common/Loading/Loading'
+import Search from './components/Search'
 class Home extends Component {
     constructor(props) {
         super(props);
@@ -17,18 +18,26 @@ class Home extends Component {
         };
     }
     async componentDidMount() {
-        await initHome().then(res=>{
-            this.setState({
-                videoList: res.data,
+        console.log('allVideoList', this.props.allVideoList)
+        if (!Array.isArray(this.props.allVideoList)) {
+            await initHome().then(res=>{
+                this.setState({
+                    videoList: res.data,
+                })
+                this.props.saveAllVideo(res.data)
+                console.log(this.props.allVideoList)
             })
-            this.props.saveAllVideo(res.data)
-            console.log(this.props.allVideoList)
-        })
-        setTimeout(() => {
+            setTimeout(() => {
+                this.setState({
+                    loadDone: true
+                })
+            }, 500);
+        }else{
             this.setState({
-                loadDone: true
+                videoList: this.props.allVideoList,
+                loadDone: true                
             })
-        }, 500);
+        }
     }
     componentWillUnmount() {
         
@@ -37,6 +46,7 @@ class Home extends Component {
         // console.log('videoList',this.state.videoList[0])
         return (
             <div className="home" >
+                <Search />
                 <Loading loading={this.state.loadDone} />
                 <Footer path="home" />
                 <List videoList={this.state.videoList} idx={3} name="全部" link="/all" />

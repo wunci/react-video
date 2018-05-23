@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import './App.css';
 import Home from './pages/Home/home'
 import Detail from './pages/Detail/detail'
 import Login from './pages/Login/login'
 import Me from './pages/Me/me'
 import More from './pages/More/more'
+import Search from './pages/Search/searchPage'
 import {
   BrowserRouter as Router,
   Route,
@@ -30,6 +30,7 @@ class App extends Component {
                     <Route path='/tv'  component={More}/>
                     <Route path='/zy'  component={More}/>
                     <Route path='/all' component={More}/>
+                    <Route path='/search' component={Search}/>
                 </div>
               </Router>
           </div>
