@@ -72,6 +72,13 @@ class Detail extends Component{
         console.log(type)
         let {videoId,videoDetail,userName} = this.state
         let {name,star,img} = videoDetail[0][0]
+        if (type === 'needLogin') {
+            this.$message({
+                icon: 'fail',                
+                message: '请先登录！'
+            })
+            return
+        }
         postVideoLikeData(videoId,type,userName,name,img,star).then(res=>{
             this.$message({
                 message: '标记为'+ (type === '1' ? '喜欢' : '不喜欢')

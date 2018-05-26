@@ -6,12 +6,29 @@ const LinkBtn = (props)=>{
     let handleSelLike = props.selLike
     return (
         <section className="like_list">
-            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('1') } : null} 
+            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('1') } : (e) => { handleSelLike('needLogin') }} 
                 className={'like '+ (props.isLike ? (props.isLike === '1' ? 'like_active' : 'likeDisable') : '')}>喜欢</div>
-            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('2') } : null} 
+            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('2') } : (e) => { handleSelLike('needLogin') }} 
                 className={'like '+ (props.isLike ? (props.isLike === '2' ? 'like_active' : 'likeDisable') : '')}>不喜欢</div>
         </section>
     )
+}
+const FixCommentInput = ({postComment,userName,commentVal,handleCommentInput})=>{
+    if(userName){
+        return (
+            <section className="fixed_comment" >
+                <input type="text" name="comment" value={commentVal} onChange={(e)=>(handleCommentInput(e))} placeholder="评论" />
+                <button onClick={(e)=>(postComment(e))}>评论</button>
+            </section>
+        )
+    }else{
+        return (
+            <section className="fixed_comment" >
+                <input type="text" name="comment" placeholder="登陆后才可以评论哟！" readOnly="readOnly" />
+                <button className="disabled">评论</button>
+            </section>
+        )
+    }
 }
 const VideoDetail = (props) => {
     let detail = props.detail && props.detail[0][0]
@@ -59,10 +76,13 @@ const VideoDetail = (props) => {
                 </p>
             </section>
             
-            <section className="fixed_comment">
-                <input type="text" name="comment" value={props.commentVal} onChange={(e)=>(props.handleCommentInput(e))} placeholder="评论" />
-                <button onClick={(e)=>(props.postComment(e))}>评论</button>
-            </section>
+            <FixCommentInput
+                postComment={props.postComment}
+                userName={props.userName}
+                commentVal={props.commentVal}
+                handleCommentInput={props.handleCommentInput}
+            />
+          
             <Comments comments={props.comments} page={props.page} />
         </div>
 

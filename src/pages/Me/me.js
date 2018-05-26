@@ -60,9 +60,11 @@ class Me extends Component{
                 comments: res.data
             })
         })
-        this.setState({
-            loadDone: true
-        })
+        setTimeout(() => {
+            this.setState({
+                loadDone: true
+            })
+        }, 500);
         console.log(avator)
     }
     /**
