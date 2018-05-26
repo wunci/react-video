@@ -1,17 +1,25 @@
 # react-video（有问题可以加qq群:725165362）
 
-> 前端项目地址 https://github.com/wclimb/react-video  
-> 前端预览 http://react.wclimb.site
+  该项目有两个版本，vue和react
+  
+> react版项目地址 https://github.com/wclimb/react-video  
+> react版预览 http://video.wclimb.site
 
 > 后端项目地址 https://github.com/wclimb/video-admin  
 > 后台管理 http://vue.wclimb.site
 
+> API接口地址 https://github.com/wclimb/video-admin/blob/master/API.md (未更新，接口现在重写过)
+
+vue版
+
+> vue版项目地址 https://github.com/wclimb/vue-video  
+> vue版前端预览 http://vue.wclimb.site
 
 ## 技术栈(react.js + Node.js 全栈项目)
 
 > 项目还在完善，基本功能已经实现，正在进行持续优化 
 
-`react` + `react-router-dom` + `redux` + `webpack` + `axios` + `less` + `flex` + `svg` + `阿里字体图标`
+`react` + `react-router` + `redux` + `webpack` + `axios` + `less` + `flex` + `svg` + `阿里字体图标`
 
 ## 运行
 
