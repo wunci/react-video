@@ -3,7 +3,7 @@
   该项目有两个版本，vue和react
   
 > react版项目地址 https://github.com/wclimb/react-video  
-> react版预览 http://video.wclimb.site
+> react版预览 http://react.wclimb.site
 
 > 后端项目地址 https://github.com/wclimb/video-admin  
 > 后台管理 http://vue.wclimb.site
