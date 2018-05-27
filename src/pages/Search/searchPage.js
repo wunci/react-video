@@ -25,7 +25,7 @@ class Search extends Component{
             <div>
                 <section id="search_main">
                     <div id="search">
-                        <input type="text" focus onChange={this.doSearch} />
+                        <input type="text" autoFocus="autofocus" onChange={this.doSearch} />
                         <i className="iconfont icon-sousuo1"></i>
                         <Link to="/"><span>取消</span></Link>
                     </div>

@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom'
 export const List = (props) => {
     let list = props.videoList
     let idx = props.idx
-    console.log(list[idx])
+    // console.log(list[idx])
     // let length1 = list[idx].length || 0
     let listItems = list[idx] && list[idx].map((val, i) => {
         return <ListDetail key={i} {...val} />

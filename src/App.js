@@ -5,6 +5,8 @@ import Login from './pages/Login/login'
 import Me from './pages/Me/me'
 import More from './pages/More/more'
 import Search from './pages/Search/searchPage'
+import Toast from './common/Toast/Toast'
+import {connect} from 'react-redux'
 import {
   BrowserRouter as Router,
   Route,
@@ -16,9 +18,13 @@ class App extends Component {
   // constructor(props){
   //   super(props)
   // }
+  componentDidMount(){
+    // console.log(this.props.toast)
+  }
   render() {
     return (
           <div className="App">
+              <Toast /> 
               <Router>
                 <div>
                     <Route exact path='/' component={Home}/>
@@ -37,5 +43,18 @@ class App extends Component {
     );
   }
 }
+function mapStateToProps(state) {
+  return {
+    toast: state.toast
+  }
+}
 
-export default App;
+function mapDispatchToProps(dispatch) {
+  return {
+    
+  }
+}
+export default connect(
+   mapStateToProps,
+   mapDispatchToProps
+)(App);

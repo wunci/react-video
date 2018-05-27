@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import {baseUrl,yzmChange,signin} from '../../fetch/fetch'
 import './login.less'
-import Toast from "../../common/Toast/Toast";
 import Footer from '../../common/Footer/Footer'
+import { connect } from 'react-redux'
+import { showToast } from "../../pages/store/action";
+import {bindActionCreators} from 'redux'
 class Login extends Component{
     constructor(props){
         super(props)
@@ -68,24 +70,24 @@ class Login extends Component{
         
         let {userName,yzm,yzmData,password} = this.state
         if (userName.trim() === ''){
-            this.$message({
-                icon:'fail',
-                message: '请输入用户名'
-            })
+             this.props.showToast({
+                 icon: 'fail',
+                 message: '请输入用户名',
+             })
         }else if(password.trim() === ''){
-            this.$message({
+            this.props.showToast({
                 icon: 'fail',
-                message: '请输入密码'
+                message: '请输入密码',
             })
         } else if (yzm !== yzmData) {
-            this.$message({
+            this.props.showToast({
                 icon: 'fail',
                 message: '请输入正确的验证码'
             })
         }else{
             signin(userName,password).then(res=>{
                 if (res.code === 200) {
-                    this.$message({
+                    this.props.showToast({
                         message: '登录成功'
                     })
                     document.cookie = `token=${res.token};max-age=${30*24*60*60*1000}`
@@ -96,7 +98,7 @@ class Login extends Component{
                     }, 1500)
                 } else if (res.code === 201) {
                     //新用户
-                    this.$message({
+                    this.props.showToast({
                         message: '注册成功'
                     })
                     document.cookie = `token=${res.token};max-age=${30*24*60*60*1000}`
@@ -106,7 +108,7 @@ class Login extends Component{
                     }, 1500)
                 }
             }).catch(e=>{
-                this.$message({
+                this.props.showToast({
                     icon:'fail',
                     message: e.message
                 })
@@ -114,12 +116,10 @@ class Login extends Component{
         }
     }
     render(){
-        let {icon,isShow,message} = this.state.toast
         return(
             <div>
                 <Footer path="/" />
                 <main>
-                    <Toast icon={icon} message={message} isShow={isShow} />
                     <section className="main_wrap">
                         <section className="user_title">
                             <i className="iconfont icon-denglu"></i>
@@ -151,4 +151,19 @@ class Login extends Component{
         )
     }
 }
-export default Login
+function mapStateToProps(state) {
+    return {
+        toast: state.toast
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        showToast: bindActionCreators(showToast, dispatch),
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Login)

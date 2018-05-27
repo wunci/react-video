@@ -1,20 +1,34 @@
 import './toast.less';
 import React, { Component } from 'react'
-export default class Toast extends Component {
+import { connect } from 'react-redux'
+import { showToast } from "../../pages/store/action";
+import {bindActionCreators} from 'redux'
+class Toast extends Component {
     // constructor(props){
-    //     super(props)
-        
+    //     super(props) 
     // }
-    show(){
-        
+    componentWillReceiveProps(){
+        let toast = this.props.toast;        
+        let isShow = toast.isShow === false ? toast.isShow : true
+        if (!isShow) {
+            console.log('show toast')
+            setTimeout(() => {
+                this.props.showToast({
+                    isShow: false
+                })
+            }, 1500);
+        }
     }
     render(){
-        if(this.props.isShow){
+        let toast = this.props.toast; 
+        console.log(toast)
+        let isShow = toast.isShow === false ? toast.isShow : true
+        if (isShow) {
             return (
                 <section className={'dialog'}>
                     <div className="dialog_wrap aniDialog">
-                        <i className={'iconfont '+ this.props.icon}></i>
-                        <p>{this.props.message}</p>
+                        <i className={'iconfont '+ (toast.icon === 'fail' ?  'icon-shibai' : 'icon-chenggong')}></i>
+                        <p>{toast.message}</p>
                     </div>
                 </section>
             )
@@ -24,7 +38,22 @@ export default class Toast extends Component {
        
     }
 }
+function mapStateToProps(state) {
+    return {
+        toast: state.toast
+    }
+}
 
+function mapDispatchToProps(dispatch) {
+    return {
+        showToast: bindActionCreators(showToast, dispatch),
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Toast)
 // export let Toast = function (text, timeout, options) {
 
 //     //如果已经弹出一个了，那么就先移除，这边只会有一个

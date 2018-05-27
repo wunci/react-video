@@ -2,12 +2,14 @@ import React,{Component} from 'react'
 import {getAvator,editNameData,uploadAvator,meDelete,meLike,meComment} from '../../fetch/fetch'
 import "../Home/home.less";
 import './me.less'
-import Toast from "../../common/Toast/Toast";
 import Comments from './components/Comments'
 import Header from './components/Header'
 import VideoList from './components/VideoList'
 import Footer from '../../common/Footer/Footer'
 import Loading from '../../common/Loading/Loading'
+import { connect } from 'react-redux'
+import { showToast } from "../../pages/store/action";
+import {bindActionCreators} from 'redux'
 
 class Me extends Component{
     constructor(props){
@@ -17,10 +19,6 @@ class Me extends Component{
             avator:'',
             videoList:null,
             comments:null,
-            toast: {
-                isShow: false,
-                icon: ''
-            },
             editNameVal:'',
             isEdit:false,
             loadDone:false
@@ -81,9 +79,20 @@ class Me extends Component{
             // console.log(event)
             el.parentNode.style.height = 0;
             el.parentNode.style.borderTop = 'none';
-            this.$message({
+            this.props.showToast({
                 message:'删除成功'
             })
+        }).catch(e=>{
+            this.props.showToast({
+                icon: 'fail',
+                message: e.message
+            })
+            setTimeout(() => {
+                if (e.code === 404) {
+                    localStorage.clear()
+                    this.props.history.push('/login')
+                }
+            }, 1500);
         })
     }
     editUserName(type){
@@ -98,7 +107,7 @@ class Me extends Component{
         }else{
             console.log('post')
             if (user === editNameVal){
-                this.$message({
+                this.props.showToast({
                     icon:'fail',
                     message: '请修改名称'
                 })
@@ -108,7 +117,7 @@ class Me extends Component{
                 return
             }
             editNameData(user, editNameVal).then(res => {
-                this.$message({
+                this.props.showToast({
                     message: '修改成功'
                 })
                 localStorage.setItem('user', editNameVal)
@@ -118,18 +127,19 @@ class Me extends Component{
                     user: editNameVal
                 })
             }).catch(e=>{
-                this.$message({
+                this.props.showToast({
                     icon: 'fail',
                     message: e.message
-                },()=>{
-                     this.setState({
-                         isEdit: false,
-                     })
-                    if (e.code === 404) {
-                        this.props.history.push('/login')
-                        localStorage.clear()
-                    }
                 })
+                setTimeout(() => {
+                    this.setState({
+                        isEdit: false,
+                    })
+                    if (e.code === 404) {
+                        localStorage.clear()
+                        this.props.history.push('/login')
+                    }
+                }, 1500);
                 
             })
         }
@@ -159,7 +169,7 @@ class Me extends Component{
                     ctx.drawImage(image, 0, 0, 100, 100);
                     var blob = canvas.toDataURL("image/png");
                     uploadAvator(user, blob).then(res => {
-                        _that.$message({
+                        _that.props.showToast({
                             message: '上传成功'
                         })
                         localStorage.setItem('avator', res.avator);
@@ -167,15 +177,16 @@ class Me extends Component{
                             avator: res.avator
                         })
                     }).catch(e => {
-                        _that.$message({
+                        _that.props.showToast({
                             icon: 'fail',
                             message: e.message
-                        }, () => {
-                            if (e.code === 404) {
-                                this.props.history.push('/login')
-                                localStorage.clear()
-                            }
                         })
+                        setTimeout(() => {
+                            if (e.code === 404) {
+                                localStorage.clear()
+                                _that.props.history.push('/login')
+                            }
+                        }, 1500);
                     })
                 }
                 image.src = e.target.result
@@ -229,36 +240,17 @@ class Me extends Component{
     }
     logout(){
         localStorage.clear()
-        this.$message({
+        this.props.showToast({
             message:'退出成功'
-        },()=>{
-            this.props.history.push('/home')
-        })
-    }
-    $message(data = {icon:'success',message:'',},cb){
-        this.setState({
-            toast: {
-                isShow: true,
-                icon: data.icon === 'fail' ?  'icon-shibai' : 'icon-chenggong',
-                message: data.message
-            }
         })
         setTimeout(() => {
-            this.setState({
-                toast: {
-                    isShow: false, 
-                }
-            })
-            cb && cb()
+            this.props.history.push('/home')
         }, 1500);
     }
     render(){
         let {avator,user,videoList,comments,isEdit,editNameVal,loadDone} = this.state
-        let {icon,isShow,message} = this.state.toast
-        
         return (
             <div>
-                <Toast icon={icon} message={message} isShow={isShow} />
                 <Footer path="me" />
                 <div className="me" onTouchStart={this.touchStartHideAll}>
                     <div className="me_deatil">
@@ -288,4 +280,19 @@ class Me extends Component{
         )
     }
 }
-export default Me
+function mapStateToProps(state) {
+    return {
+        toast: state.toast
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        showToast: bindActionCreators(showToast, dispatch),
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Me)

@@ -5,7 +5,7 @@ import { initHome } from '../../fetch/fetch'
 import {List} from './components/List'
 import Footer from '../../common/Footer/Footer'
 import { connect } from 'react-redux'
-import { saveAllVideo } from "../store/action";
+import { saveAllVideo,showToast } from "../store/action";
 import {bindActionCreators} from 'redux'
 import Loading from '../../common/Loading/Loading'
 import Search from './components/Search'
@@ -19,6 +19,7 @@ class Home extends Component {
     }
     async componentDidMount() {
         console.log('allVideoList', this.props.allVideoList)
+        
         if (!Array.isArray(this.props.allVideoList)) {
             await initHome().then(res=>{
                 this.setState({
@@ -38,6 +39,7 @@ class Home extends Component {
                 loadDone: true                
             })
         }
+      
     }
     componentWillUnmount() {
         
@@ -68,6 +70,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         saveAllVideo: bindActionCreators(saveAllVideo, dispatch),
+        showToast: bindActionCreators(showToast, dispatch),
     }
 }
 

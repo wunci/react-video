@@ -2,9 +2,11 @@ import React, {Component} from "react";
 import './detail.less'
 import { singleVideoData,getVideoComment,getInitVideoLikeData,postVideoLikeData,reportComment } from '../../fetch/fetch'
 import VideoDetail from './components/VideoDetail'
-import Toast from "../../common/Toast/Toast";
 import Pagination from "./components/Pagination";
 import Loading from '../../common/Loading/Loading'
+import { connect } from 'react-redux'
+import { showToast } from "../../pages/store/action";
+import {bindActionCreators} from 'redux'
 
 class Detail extends Component{
     constructor(props){
@@ -14,10 +16,6 @@ class Detail extends Component{
             videoId: this.props.match.params.id,
             userName: localStorage.getItem('user'),
             iLike: '',
-            toast: {
-                isShow: false,
-                icon: ''
-            },
             commentVal:'',
             page:1,
             loadDone:false
@@ -42,10 +40,8 @@ class Detail extends Component{
             this.setState({
                 videoComment: res.data,
                 videoDetail
-                
             })
             console.log('getVideoComment')
-            
         })
         await getInitVideoLikeData(videoId,userName).then(res=>{
             console.log(res.data[0])
@@ -73,29 +69,29 @@ class Detail extends Component{
         let {videoId,videoDetail,userName} = this.state
         let {name,star,img} = videoDetail[0][0]
         if (type === 'needLogin') {
-            this.$message({
+            this.props.showToast({
                 icon: 'fail',                
                 message: '请先登录！'
             })
             return
         }
         postVideoLikeData(videoId,type,userName,name,img,star).then(res=>{
-            this.$message({
+            this.props.showToast({
                 message: '标记为'+ (type === '1' ? '喜欢' : '不喜欢')
             })
             this.setState({
                 iLike: type
             })
         }).catch(e=>{
-            this.$message({
+            this.props.showToast({
                 icon: 'fail',
                 message: e.message
             })
             if (e.code === 404) {
                 setTimeout(() => {
+                    localStorage.clear()
                     this.props.history.push('/login')
                 }, 1500);
-                localStorage.clear()
             }
             
         })
@@ -117,14 +113,14 @@ class Detail extends Component{
         let {name} = videoDetail[0][0]
         let avator = localStorage.getItem('avator')
         if (commentVal.trim() === ''){
-            this.$message({
+            this.props.showToast({
                 icon:'fail',
                 message: '请输入评论内容'
             })
             return
         }
         reportComment(videoId,userName,commentVal,name,avator).then(res=>{
-            this.$message({
+            this.props.showToast({
                 message: '评论成功'
             })
             videoComment.push({
@@ -145,19 +141,17 @@ class Detail extends Component{
             var scrollHeight = document.documentElement.scrollHeight;
             console.log(scrollHeight)
             window.scrollTo(0, scrollHeight);
-            // this.$nextTick(() => {
-            //     this.scrollToBottom()
-            // })
+           
         }).catch(e=>{
-            this.$message({
+            this.props.showToast({
                 icon: 'fail',
                 message: e.message
             })
             if (e.code === 404) {
                 setTimeout(() => {
+                    localStorage.clear()
                     this.props.history.push('/login')
                 }, 1500);
-                localStorage.clear()
             }
         })
     }
@@ -193,30 +187,11 @@ class Detail extends Component{
             page: --prevState.page
         }))
     }
-    $message(data = {icon:'success',message:''}){
-        this.setState({
-            toast: {
-                isShow: true,
-                icon: data.icon === 'fail' ?  'icon-shibai' : 'icon-chenggong',
-                message: data.message
-            }
-        })
-        setTimeout(() => {
-            this.setState({
-                toast: {
-                    isShow: false, 
-                }
-            })
-        }, 1500);
-    }
     render(){
         let {iLike,videoDetail,videoComment,userName,page,commentVal,loadDone} = this.state
-        let {icon,isShow,message} = this.state.toast
-        
         return (
             <div className="detail">
                 <Loading loading={loadDone} />
-                <Toast icon={icon} message={message} isShow={isShow} />
                 <VideoDetail
                     selLike={this.handleSelLike}  
                     userName={userName} 
@@ -234,4 +209,19 @@ class Detail extends Component{
         )
     }
 }
-export default Detail
+function mapStateToProps(state) {
+    return {
+        toast: state.toast
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        showToast: bindActionCreators(showToast, dispatch),
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Detail)
