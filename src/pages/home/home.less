@@ -4,9 +4,17 @@
     }
     padding-bottom: 1.2rem;
     font-size: 12px;
+    .wrap{
+        margin-top: 0.9rem;
+    }
     #search{
         padding: 0.15rem 0;
         background: #0fce0f; 
+        z-index: 999;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
         a{
             display: block;
             display: flex;
@@ -34,6 +42,9 @@
         }
     }
     .video_list {
+        &:nth-of-type(1){
+            margin-top: 0rem;
+        }
         &+.video_list{
             border-top:0.2rem solid #f2f2f2;
             margin-top: 0.3rem;

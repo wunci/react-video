@@ -6,9 +6,9 @@ const LinkBtn = (props)=>{
     let handleSelLike = props.selLike
     return (
         <section className="like_list">
-            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('1') } : (e) => { handleSelLike('needLogin') }} 
+             <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('1') } : props.isLike ? '' : (e) => { handleSelLike('needLogin') }} 
                 className={'like '+ (props.isLike ? (props.isLike === '1' ? 'like_active' : 'likeDisable') : '')}>喜欢</div>
-            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('2') } : (e) => { handleSelLike('needLogin') }} 
+            <div onClick={props.userName && !props.isLike ? (e) => { handleSelLike('2') } : props.isLike ? '' : (e) => { handleSelLike('needLogin') }} 
                 className={'like '+ (props.isLike ? (props.isLike === '2' ? 'like_active' : 'likeDisable') : '')}>不喜欢</div>
         </section>
     )

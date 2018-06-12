@@ -3,7 +3,7 @@ import {baseUrl,yzmChange,signin} from '../../fetch/fetch'
 import './login.less'
 import Footer from '../../common/Footer/Footer'
 import { connect } from 'react-redux'
-import { showToast } from "../../pages/store/action";
+import { showToast } from "../../store/action";
 import {bindActionCreators} from 'redux'
 class Login extends Component{
     constructor(props){
@@ -47,22 +47,6 @@ class Login extends Component{
         this.setState({
             [target.name]: target.value
         })
-    }
-    $message(data = {icon:'success',message:''}){
-        this.setState({
-            toast: {
-                isShow: true,
-                icon: data.icon === 'fail' ?  'icon-shibai' : 'icon-chenggong',
-                message: data.message
-            }
-        })
-        setTimeout(() => {
-            this.setState({
-                toast: {
-                    isShow: false, 
-                }
-            })
-        }, 1500);
     }
     submit(e){
         console.log(e)

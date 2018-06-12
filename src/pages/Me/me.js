@@ -8,8 +8,9 @@ import VideoList from './components/VideoList'
 import Footer from '../../common/Footer/Footer'
 import Loading from '../../common/Loading/Loading'
 import { connect } from 'react-redux'
-import { showToast } from "../../pages/store/action";
+import { showToast } from "../../store/action";
 import {bindActionCreators} from 'redux'
+import Arrow from '../../common/Arrow/arrow'
 
 class Me extends Component{
     constructor(props){
@@ -21,8 +22,15 @@ class Me extends Component{
             comments:null,
             editNameVal:'',
             isEdit:false,
-            loadDone:false
-        }
+            loadDone:false,
+            pStart: 0,
+            pScroll: 0,
+            isPullDown: false,
+            isStart: false
+        };
+        this.pullDownStart = this.pullDownStart.bind(this)
+        this.pullDownMove = this.pullDownMove.bind(this)
+        this.pullDownEnd = this.pullDownEnd.bind(this)
         this.touchStart = this.touchStart.bind(this)
         this.touchMove = this.touchMove.bind(this)
         this.touchEnd = this.touchEnd.bind(this)
@@ -247,34 +255,73 @@ class Me extends Component{
             this.props.history.push('/home')
         }, 1500);
     }
+    pullDownStart(e) {
+        console.log(e.touches[0].pageY)
+        this.setState({
+            pStart: e.touches[0].pageY,
+            isStart: true
+        })
+    }
+    pullDownMove(e) {
+        let pScroll = Math.ceil((e.touches[0].pageY - this.state.pStart) * 0.6)
+        console.log(pScroll, e.touches[0].pageY)
+        this.setState({
+            pScroll,
+
+        })
+    }
+    pullDownEnd(e) {
+        console.log('end', e)
+        let pScroll = this.state.pScroll
+        this.setState({
+            pScroll: 0,
+            isPullDown: true,
+            isStart: false,
+            loadDone: pScroll >= 50 ? false : true,
+        })
+        if (pScroll >= 50) {
+            this.componentDidMount()
+        }
+    }
     render(){
-        let {avator,user,videoList,comments,isEdit,editNameVal,loadDone} = this.state
+        let {avator,user,videoList,comments,isEdit,editNameVal,loadDone,isStart,pScroll} = this.state
         return (
             <div>
                 <Footer path="me" />
                 <div className="me" onTouchStart={this.touchStartHideAll}>
                     <div className="me_deatil">
-                        <Header 
-                            avator={avator} 
-                            user={user} 
-                            editUserName={this.editUserName}
-                            isEdit={isEdit}
-                            editNameVal={editNameVal}
-                            handleUserNameInput={this.handleUserNameInput}
-                            upload={this.uploadAvator}
-                            logout={this.logout.bind(this)}
-                        />
-                        <Loading loading={loadDone} />
-                        <VideoList videoList={videoList} idx="0" />
-                        <VideoList videoList={videoList} idx="1" />
-                        <Comments
-                            comments={comments} 
-                            start={this.touchStart}  
-                            move={this.touchMove}  
-                            end={this.touchEnd}  
-                            deleteComment={this.deleteComment}
-                        />
-                    </div>
+                        <div className="pulldownWrap"
+                            onTouchStart={this.pullDownStart}
+                            onTouchMove={this.pullDownMove}
+                            onTouchEnd={this.pullDownEnd}
+                            style = {
+                                {
+                                    top: (pScroll > 0 ? pScroll : 0) + 'px'
+                                }
+                            } >
+                            <Arrow hidden={loadDone&&isStart} rotate={pScroll} /> 
+                            <Loading loading={loadDone} />
+                            <Header 
+                                avator={avator} 
+                                user={user} 
+                                editUserName={this.editUserName}
+                                isEdit={isEdit}
+                                editNameVal={editNameVal}
+                                handleUserNameInput={this.handleUserNameInput}
+                                upload={this.uploadAvator}
+                                logout={this.logout.bind(this)}
+                            />
+                                <VideoList videoList={videoList} idx="0" />
+                                <VideoList videoList={videoList} idx="1" />
+                                <Comments
+                                    comments={comments} 
+                                    start={this.touchStart}  
+                                    move={this.touchMove}  
+                                    end={this.touchEnd}  
+                                    deleteComment={this.deleteComment}
+                                />
+                            </div>
+                        </div>
                 </div>
             </div>
         )

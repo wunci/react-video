@@ -5,8 +5,9 @@ import VideoDetail from './components/VideoDetail'
 import Pagination from "./components/Pagination";
 import Loading from '../../common/Loading/Loading'
 import { connect } from 'react-redux'
-import { showToast } from "../../pages/store/action";
+import { showToast } from "../../store/action";
 import {bindActionCreators} from 'redux'
+import Arrow from '../../common/Arrow/arrow'
 
 class Detail extends Component{
     constructor(props){
@@ -18,8 +19,15 @@ class Detail extends Component{
             iLike: '',
             commentVal:'',
             page:1,
-            loadDone:false
-        }
+            loadDone:false,
+            pStart: 0,
+            pScroll: 0,
+            isPullDown: false,
+            isStart: false
+        };
+        this.pullDownStart = this.pullDownStart.bind(this)
+        this.pullDownMove = this.pullDownMove.bind(this)
+        this.pullDownEnd = this.pullDownEnd.bind(this)
         console.log(this.props.match.params.id)
         this.handleSelLike = this.handleSelLike.bind(this)
         this.handleCommentInput = this.handleCommentInput.bind(this)
@@ -187,24 +195,68 @@ class Detail extends Component{
             page: --prevState.page
         }))
     }
+    pullDownStart(e) {
+        console.log(e.touches[0].pageY)
+        this.setState({
+            pStart: e.touches[0].pageY,
+            isStart: true
+        })
+    }
+    pullDownMove(e) {
+        let pScroll = Math.ceil((e.touches[0].pageY - this.state.pStart) * 0.6)
+        console.log(pScroll, e.touches[0].pageY)
+        this.setState({
+            pScroll
+        })
+    }
+    pullDownEnd(e) {
+        // let scrollTop =  document.documentElement.scrollTop || document.body.scrollTop
+        let pScroll = this.state.pScroll
+        this.setState({
+            pScroll: 0,
+            isPullDown: true,
+            isStart: false,
+            loadDone: pScroll >= 50 ? false : true,
+        })
+        if (pScroll >= 50) {
+            this.componentDidMount()
+        }
+    }
     render(){
-        let {iLike,videoDetail,videoComment,userName,page,commentVal,loadDone} = this.state
+        let {iLike,videoDetail,videoComment,userName,page,commentVal,loadDone,isStart,pScroll} = this.state
         return (
-            <div className="detail">
-                <Loading loading={loadDone} />
-                <VideoDetail
-                    selLike={this.handleSelLike}  
-                    userName={userName} 
-                    isLike={iLike}
-                    goBack={()=>(this.props.history.goBack())} 
-                    detail={videoDetail}
-                    comments={videoComment} 
-                    commentVal={commentVal}
-                    handleCommentInput={(e)=>(this.handleCommentInput(e))}
-                    postComment={this.postComment}
-                    page={page}
-                />
-                <Pagination page={page} commentsPageLength={videoComment&&videoComment.length} nextPage={this.nextPage} goPage={this.goPage} prevPage={this.prevPage} />
+            <div className="pulldownWrap"
+                onTouchStart={this.pullDownStart}
+                onTouchMove={this.pullDownMove}
+                onTouchEnd={this.pullDownEnd}
+                style = {
+                    {
+                        top: (pScroll > 0 ? pScroll : 0) + 'px'
+                    }
+                } >
+            <div className="detail"
+                >
+                    <Arrow hidden={loadDone&&isStart} rotate={pScroll} /> 
+                    <Loading loading={loadDone} />
+                    <VideoDetail
+                        selLike={this.handleSelLike}  
+                        userName={userName} 
+                        isLike={iLike}
+                        goBack={()=>(this.props.history.goBack())} 
+                        detail={videoDetail}
+                        comments={videoComment} 
+                        commentVal={commentVal}
+                        handleCommentInput={(e)=>(this.handleCommentInput(e))}
+                        page={page}
+                        postComment={this.postComment}
+                    />
+                    <Pagination page={page} commentsPageLength={videoComment&&videoComment.length} nextPage={this.nextPage} goPage={this.goPage} prevPage={this.prevPage} />
+                </div>
+                {/* <FixComment 
+                        userName={userName}
+                        commentVal={commentVal}
+                        handleCommentInput={(e)=>(this.handleCommentInput(e))}
+                /> */}
             </div>
         )
     }
