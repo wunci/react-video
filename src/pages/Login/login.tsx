@@ -59,12 +59,6 @@ class Login extends Component<ILoginProps, ILoginState> {
   }
   inputChange(e: React.ChangeEvent<HTMLInputElement>) {
     let target = e.target;
-    // todo
-    // let name = (target && target.name) || "userName";
-    // let name: Pick<ILoginState, "userName" | "password"> = {
-    //   [key]: target.value
-    // };
-    // this.setState(name);
     this.setState({
       [target.name]: target.value
     } as any);
