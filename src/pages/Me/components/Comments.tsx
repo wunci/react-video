@@ -1,6 +1,19 @@
 import React from "react";
+import { IComment } from "../../type";
 
-const Comments = ({ comments, start, move, end, deleteComment }) => {
+const Comments = ({
+  comments,
+  start,
+  move,
+  end,
+  deleteComment
+}: {
+  comments: Array<IComment>;
+  start: Function;
+  move: Function;
+  end: Function;
+  deleteComment: Function;
+}) => {
   let items =
     comments &&
     comments.map(val => (

@@ -1,19 +1,24 @@
 import React from "react";
 import { baseUrl } from "../../../fetch/fetch";
 import Comments from "./Comments";
-const LinkBtn = props => {
+import { IComment, IVideoDetail } from "../../type";
+const LinkBtn = (props: {
+  selLike: Function;
+  userName: string;
+  isLike: string;
+}) => {
   let handleSelLike = props.selLike;
   return (
     <section className="like_list">
       <div
         onClick={
           props.userName && !props.isLike
-            ? e => {
+            ? () => {
                 handleSelLike("1");
               }
             : props.isLike
             ? () => {}
-            : e => {
+            : () => {
                 handleSelLike("needLogin");
               }
         }
@@ -31,12 +36,12 @@ const LinkBtn = props => {
       <div
         onClick={
           props.userName && !props.isLike
-            ? e => {
+            ? () => {
                 handleSelLike("2");
               }
             : props.isLike
             ? () => {}
-            : e => {
+            : () => {
                 handleSelLike("needLogin");
               }
         }
@@ -59,6 +64,11 @@ const FixCommentInput = ({
   userName,
   commentVal,
   handleCommentInput
+}: {
+  postComment: Function;
+  userName: string;
+  commentVal: string;
+  handleCommentInput: Function;
 }) => {
   if (userName) {
     return (
@@ -80,17 +90,30 @@ const FixCommentInput = ({
           type="text"
           name="comment"
           placeholder="登陆后才可以评论哟！"
-          readOnly="readOnly"
+          readOnly={true}
         />
         <button className="disabled">评论</button>
       </section>
     );
   }
 };
-const VideoDetail = props => {
-  let detail = props.detail && props.detail[0][0];
-  let star = props.detail && props.detail[1][0]["count(*)"];
-  if (!detail) return "";
+const VideoDetail = (props: {
+  detail: Array<Array<IVideoDetail>>;
+  goBack: Function;
+  comments: Array<IComment>;
+  isLike: string;
+  userName: string;
+  selLike: Function;
+  postComment: Function;
+  commentVal: string;
+  handleCommentInput: Function;
+  page: number;
+}) => {
+  const detail = (props.detail && props.detail[0] && props.detail[0][0]) || {};
+  const star =
+    props.detail && props.detail[1] && props.detail[1][0]["count(*)"];
+  const y = -15 * Number((10 - +detail.star).toFixed(0));
+  if (!detail) return <div></div>;
   return (
     <div>
       <header>
@@ -108,8 +131,7 @@ const VideoDetail = props => {
                 <div
                   className="starList"
                   style={{
-                    backgroundPositionY:
-                      -15 * (10 - detail.star).toFixed(0) + "px"
+                    backgroundPositionY: y + "px"
                   }}
                 ></div>
                 <p>

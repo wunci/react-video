@@ -1,5 +1,8 @@
 import { combineReducers } from "redux";
-const videoList = (state = {}, action) => {
+const videoList = (
+  state = {},
+  action: { type: string; video: Array<Object> }
+) => {
   switch (action.type) {
     case "SAVE_ALL_VIDEO":
       return action.video;
@@ -7,7 +10,10 @@ const videoList = (state = {}, action) => {
       return state;
   }
 };
-const toast = (state = { icon: "", message: "", isShow: false }, action) => {
+const toast = (
+  state = { icon: "", message: "", isShow: false },
+  action: { type: string; toast: Object }
+) => {
   switch (action.type) {
     case "SHOW_TOAST":
       return action.toast;

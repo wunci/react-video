@@ -9,3 +9,4 @@
   doc.addEventListener("DOMContentLoaded", fn, false);
 })(document, window);
 document.body.addEventListener("touchstart", function() {}, false);
+export {};

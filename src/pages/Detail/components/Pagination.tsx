@@ -1,5 +1,11 @@
 import React from "react";
-const Pagination = props => {
+const Pagination = (props: {
+  page: number;
+  commentsPageLength: number;
+  nextPage: Function;
+  prevPage: Function;
+  goPage: Function;
+}) => {
   let { page, commentsPageLength, nextPage, prevPage, goPage } = props;
   let commentLength = Math.ceil(commentsPageLength / 5);
   return (

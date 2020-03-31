@@ -1,12 +1,19 @@
 import React from "react";
 import { baseUrl } from "../../../fetch/fetch";
 import { Link } from "react-router-dom";
-export const List = props => {
+import { IVideo } from "../../type";
+interface IListProps {
+  videoList: Array<Array<IVideo>>;
+  idx: number;
+  name: string;
+  link: string;
+}
+export const List = (props: IListProps) => {
   let list = props.videoList;
   let idx = props.idx;
   let listItems =
     list[idx] &&
-    list[idx].map((val, i) => {
+    list[idx].map((val: IVideo, i: number) => {
       return <ListDetail key={i} {...val} />;
     });
   return (
@@ -24,7 +31,8 @@ export const List = props => {
     </section>
   );
 };
-export const ListDetail = props => (
+
+export const ListDetail = (props: IVideo) => (
   <li>
     <Link to={"/video/" + props.id}>
       <div className="preImg">
@@ -35,7 +43,8 @@ export const ListDetail = props => (
         <div
           className="starList"
           style={{
-            backgroundPositionY: -15 * (10 - props.star).toFixed(0) + "px"
+            backgroundPositionY:
+              -15 * Number((10 - +props.star).toFixed(0)) + "px"
           }}
         ></div>
         <span>{props.star}</span>

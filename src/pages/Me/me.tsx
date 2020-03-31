@@ -16,17 +16,38 @@ import Footer from "../../common/Footer/Footer";
 import Loading from "../../common/Loading/Loading";
 import { connect } from "react-redux";
 import { showToast } from "../../store/action";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, Dispatch } from "redux";
 import Arrow from "../../common/Arrow/arrow";
+import { IVideo, IComment } from "../type";
 
-class Me extends Component {
-  constructor(props) {
+interface IMeProps {
+  history: { push: Function; goBack: Function };
+  showToast: Function;
+}
+interface IMeState {
+  user: string;
+  avator: string;
+  videoList: Array<Array<IVideo>>;
+  comments: Array<IComment>;
+  editNameVal: string;
+  isEdit: boolean;
+  loadDone: boolean;
+  pStart: number;
+  pScroll: number;
+  isPullDown: boolean;
+  isStart: boolean;
+}
+class Me extends Component<IMeProps, IMeState> {
+  start: number = 0;
+  scroll: number = 0;
+  constructor(props: IMeProps) {
     super(props);
+
     this.state = {
       user: "",
       avator: "",
-      videoList: null,
-      comments: null,
+      videoList: [],
+      comments: [],
       editNameVal: "",
       isEdit: false,
       loadDone: false,
@@ -83,14 +104,15 @@ class Me extends Component {
    * @param {*} id 影片id
    * @param {*} e
    */
-  deleteComment(id, event) {
+  deleteComment(id: number, event: React.TouchEvent) {
     let { user } = localStorage;
     event.persist();
     meDelete(id, user)
-      .then(res => {
-        var el = event.target;
-        el.parentNode.style.height = 0;
-        el.parentNode.style.borderTop = "none";
+      .then(() => {
+        const el = event.target as HTMLElement;
+        const parent = el.parentNode as HTMLElement;
+        parent.style.height = "0";
+        parent.style.borderTop = "none";
         this.props.showToast({
           message: "删除成功"
         });
@@ -108,7 +130,7 @@ class Me extends Component {
         }, 1500);
       });
   }
-  editUserName(type) {
+  editUserName(type: string) {
     let { user } = localStorage,
       { editNameVal } = this.state;
     if (type === "edit") {
@@ -160,29 +182,32 @@ class Me extends Component {
         });
     }
   }
-  handleUserNameInput(e) {
+  handleUserNameInput(e: React.ChangeEvent<HTMLInputElement>) {
     let val = e.target.value;
     this.setState({
       editNameVal: val
     });
   }
-  uploadAvator(e) {
+  uploadAvator(e: React.ChangeEvent<HTMLInputElement>) {
     let { user } = this.state,
       files = e.target.files;
-    if (files.length !== 0) {
+    if (files && files.length !== 0) {
       var file = files[0],
-        reader = new FileReader(),
+        reader: FileReader = new FileReader(),
         _that = this;
-      reader.onload = function(e) {
-        var image = new Image();
+      reader.onload = function(e: Event) {
+        var image: HTMLImageElement = new Image();
         image.onload = function() {
-          var canvas = document.createElement("canvas");
+          var canvas = document.createElement("canvas") as HTMLCanvasElement;
           var ctx = canvas.getContext("2d");
           canvas.width = 100;
           canvas.height = 100;
-          ctx.clearRect(0, 0, 100, 100);
-          ctx.drawImage(image, 0, 0, 100, 100);
+          if (ctx) {
+            ctx.clearRect(0, 0, 100, 100);
+            ctx.drawImage(image, 0, 0, 100, 100);
+          }
           var blob = canvas.toDataURL("image/png");
+          debugger;
           uploadAvator(user, blob)
             .then(res => {
               _that.props.showToast({
@@ -206,13 +231,15 @@ class Me extends Component {
               }, 1500);
             });
         };
-        image.src = e.target.result;
+        image.src = String(reader.result || "");
       };
       reader.readAsDataURL(file);
     }
   }
-  touchStart(e) {
-    var commentWrap = document.querySelectorAll(".commentWrap");
+  touchStart(e: React.TouchEvent) {
+    var commentWrap = document.querySelectorAll(".commentWrap") as NodeListOf<
+      HTMLElement
+    >;
     for (var i = 0; i < commentWrap.length; i++) {
       commentWrap[i].style.transform = "translate(" + 0 + "rem)";
       commentWrap[i].style.webkitTransform = "translate(" + 0 + "rem)";
@@ -220,16 +247,19 @@ class Me extends Component {
     var start = e.touches[0].pageX / 100;
     this.start = start;
   }
-  touchStartHideAll(e) {
-    if (e.target.className !== "delete") {
-      var commentWrap = document.querySelectorAll(".commentWrap");
+  touchStartHideAll(e: React.TouchEvent) {
+    const { className } = e.target as HTMLElement;
+    if (className !== "delete") {
+      var commentWrap = document.querySelectorAll(".commentWrap") as NodeListOf<
+        HTMLElement
+      >;
       for (var i = 0; i < commentWrap.length; i++) {
         commentWrap[i].style.transform = "translate(" + 0 + "rem)";
         commentWrap[i].style.webkitTransform = "translate(" + 0 + "rem)";
       }
     }
   }
-  touchMove(e) {
+  touchMove(e: React.TouchEvent) {
     var scroll = e.touches[0].pageX / 100 - this.start;
     this.scroll = scroll;
     if (scroll < -1.5) {
@@ -237,12 +267,12 @@ class Me extends Component {
     } else if (scroll > 0) {
       scroll = 0;
     }
-    var el = e.currentTarget;
+    var el = e.currentTarget as HTMLElement;
     el.style.transform = "translate(" + scroll + "rem)";
     el.style.webkitTransform = "translate(" + scroll + "rem)";
   }
-  touchEnd(e) {
-    var el = e.currentTarget;
+  touchEnd(e: React.TouchEvent) {
+    var el = e.currentTarget as HTMLElement;
     if (this.scroll < 0 && this.scroll >= -1) {
       el.style.transform = "translate(" + 0 + "rem)";
       el.style.webkitTransform = "translate(" + 0 + "rem)";
@@ -262,19 +292,19 @@ class Me extends Component {
       this.props.history.push("/home");
     }, 1500);
   }
-  pullDownStart(e) {
+  pullDownStart(e: React.TouchEvent) {
     this.setState({
       pStart: e.touches[0].pageY,
       isStart: true
     });
   }
-  pullDownMove(e) {
+  pullDownMove(e: React.TouchEvent) {
     let pScroll = Math.ceil((e.touches[0].pageY - this.state.pStart) * 0.6);
     this.setState({
       pScroll
     });
   }
-  pullDownEnd(e) {
+  pullDownEnd() {
     let pScroll = this.state.pScroll;
     this.setState({
       pScroll: 0,
@@ -324,8 +354,8 @@ class Me extends Component {
                 upload={this.uploadAvator}
                 logout={this.logout.bind(this)}
               />
-              <VideoList videoList={videoList} idx="0" />
-              <VideoList videoList={videoList} idx="1" />
+              <VideoList videoList={videoList} idx={0} />
+              <VideoList videoList={videoList} idx={1} />
               <Comments
                 comments={comments}
                 start={this.touchStart}
@@ -340,13 +370,13 @@ class Me extends Component {
     );
   }
 }
-function mapStateToProps(state) {
+function mapStateToProps(state: { toast: Object }) {
   return {
     toast: state.toast
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     showToast: bindActionCreators(showToast, dispatch)
   };

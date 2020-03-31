@@ -4,16 +4,32 @@ import "./login.less";
 import Footer from "../../common/Footer/Footer";
 import { connect } from "react-redux";
 import { showToast } from "../../store/action";
-import { bindActionCreators } from "redux";
-class Login extends Component {
-  constructor(props) {
+import { bindActionCreators, Dispatch } from "redux";
+
+interface ILoginProps {
+  history: { push: Function; goBack: Function };
+  showToast: Function;
+}
+interface ILoginState {
+  userName: string;
+  password: string;
+  yzm: string;
+  yzmData: string;
+  random: number;
+  toast: {
+    isShow: boolean;
+    icon: string;
+  };
+}
+class Login extends Component<ILoginProps, ILoginState> {
+  constructor(props: ILoginProps) {
     super(props);
     this.state = {
       userName: "",
       password: "",
       yzm: "",
       yzmData: "",
-      random: "",
+      random: 0,
       toast: {
         isShow: false,
         icon: ""
@@ -33,7 +49,7 @@ class Login extends Component {
     this.changeYzm();
   }
   changeYzm() {
-    yzmChange().then(res => {
+    yzmChange().then((res: any) => {
       console.log("验证码", res.data);
       this.setState({
         yzmData: res.data,
@@ -41,13 +57,19 @@ class Login extends Component {
       });
     });
   }
-  inputChange(e) {
+  inputChange(e: React.ChangeEvent<HTMLInputElement>) {
     let target = e.target;
+    // todo
+    // let name = (target && target.name) || "userName";
+    // let name: Pick<ILoginState, "userName" | "password"> = {
+    //   [key]: target.value
+    // };
+    // this.setState(name);
     this.setState({
       [target.name]: target.value
-    });
+    } as any);
   }
-  submit(e) {
+  submit() {
     let { userName, yzm, yzmData, password } = this.state;
     if (userName.trim() === "") {
       this.props.showToast({
@@ -164,13 +186,13 @@ class Login extends Component {
     );
   }
 }
-function mapStateToProps(state) {
+function mapStateToProps(state: { toast: Object }) {
   return {
     toast: state.toast
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     showToast: bindActionCreators(showToast, dispatch)
   };

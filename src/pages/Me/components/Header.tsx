@@ -9,6 +9,15 @@ const Header = ({
   editNameVal,
   upload,
   logout
+}: {
+  user: string;
+  avator: string;
+  editUserName: Function;
+  isEdit: boolean;
+  handleUserNameInput: Function;
+  editNameVal: string;
+  upload: Function;
+  logout: Function;
 }) => {
   let UploadAvator = () => {
     if (avator === "") {

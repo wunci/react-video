@@ -1,7 +1,7 @@
 import React from "react";
-import arrow from "../../img/arrow.png";
+import * as arrow from "../../img/arrow.png";
 import "./arrow.less";
-const Arrow = ({ rotate, hidden }) => {
+const Arrow = ({ rotate, hidden }: { rotate: number; hidden: boolean }) => {
   if (hidden) {
     return (
       <div className="arrowWrap">
@@ -9,7 +9,7 @@ const Arrow = ({ rotate, hidden }) => {
       </div>
     );
   } else {
-    return "";
+    return <div></div>;
   }
 };
 export default Arrow;

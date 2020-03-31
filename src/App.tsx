@@ -36,13 +36,14 @@ class App extends Component {
     );
   }
 }
-function mapStateToProps(state) {
+
+function mapStateToProps(state: { toast: Object }) {
   return {
     toast: state.toast
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Object) {
   return {};
 }
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -2,14 +2,19 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { baseUrl, initHome } from "../../fetch/fetch";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, Dispatch } from "redux";
 import { saveAllVideo } from "../../store/action";
 import "./more.less";
+import { IVideo } from "../type";
 
-class More extends Component {
-  constructor(props) {
+interface IMoreProps {
+  allVideoList: Array<Array<IVideo>>;
+  saveAllVideo: Function;
+  match: { path: string };
+}
+class More extends Component<IMoreProps> {
+  constructor(props: IMoreProps) {
     super(props);
-    console.log(this.props.allVideoList);
   }
   componentDidMount() {
     if (Object.keys(this.props.allVideoList).length === 0) {
@@ -49,7 +54,7 @@ class More extends Component {
             <h1>{name}</h1>
             <ul>
               {videoList &&
-                videoList.map((list, i) => {
+                videoList.map((list: IVideo) => {
                   return (
                     <li key={list.id}>
                       <Link to={"video/" + list.id}>
@@ -62,7 +67,8 @@ class More extends Component {
                             className="starList"
                             style={{
                               backgroundPositionY:
-                                -15 * (10 - list.star).toFixed(0) + "px"
+                                -15 * Number((10 - +list.star).toFixed(0)) +
+                                "px"
                             }}
                           ></div>
                           <span>{list.star}</span>
@@ -78,13 +84,13 @@ class More extends Component {
     );
   }
 }
-function mapStateToProps(state) {
+function mapStateToProps(state: { videoList: Array<Array<IVideo>> }) {
   return {
     allVideoList: state.videoList
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     saveAllVideo: bindActionCreators(saveAllVideo, dispatch)
   };

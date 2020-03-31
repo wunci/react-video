@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import "./footer.less";
-const Footer = props => (
+
+const Footer = (props: { path: string }) => (
   <section className="footer">
     <Link to="/" className={props.path === "home" ? "active" : ""}>
       <i className="iconfont icon-dianying"></i>

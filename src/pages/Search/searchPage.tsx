@@ -2,16 +2,19 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import "./searchPage.less";
 import { baseUrl, search } from "../../fetch/fetch";
-
-class Search extends Component {
-  constructor(props) {
+import { IVideo } from "../type";
+interface ISearchState {
+  searchResult: Array<IVideo>;
+}
+class Search extends Component<Object | string, ISearchState> {
+  constructor(props: Object | string) {
     super(props);
     this.doSearch = this.doSearch.bind(this);
     this.state = {
-      searchResult: null
+      searchResult: []
     };
   }
-  doSearch(e) {
+  doSearch(e: React.ChangeEvent<HTMLInputElement>) {
     search(e.target.value).then(res => {
       this.setState({
         searchResult: res.data
@@ -24,7 +27,7 @@ class Search extends Component {
       <div>
         <section id="search_main">
           <div id="search">
-            <input type="text" autoFocus="autofocus" onChange={this.doSearch} />
+            <input type="text" autoFocus={true} onChange={this.doSearch} />
             <i className="iconfont icon-sousuo1"></i>
             <Link to="/">
               <span>取消</span>
@@ -48,9 +51,9 @@ class Search extends Component {
               ))}
             </ul>
           ) : searchResult !== null ? (
-            <div class="not_find"> 没有相关影片 </div>
+            <div className="not_find"> 没有相关影片 </div>
           ) : (
-            ""
+            <div></div>
           )}
         </section>
       </div>

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./detail.less";
+import { AxiosResponse } from "axios";
 import {
   singleVideoData,
   getVideoComment,
@@ -12,14 +13,34 @@ import Pagination from "./components/Pagination";
 import Loading from "../../common/Loading/Loading";
 import { connect } from "react-redux";
 import { showToast } from "../../store/action";
-import { bindActionCreators } from "redux";
+import { bindActionCreators, Dispatch } from "redux";
 import Arrow from "../../common/Arrow/arrow";
-
-class Detail extends Component {
-  constructor(props) {
+import { IVideoDetail, IComment } from "../type";
+interface IDetailProps {
+  match: { params: { id: number } };
+  showToast: Function;
+  history: { push: Function; goBack: Function };
+}
+interface State {
+  videoDetail: Array<Array<IVideoDetail>>;
+  videoId: number;
+  userName: string;
+  iLike: string;
+  commentVal: string;
+  page: number;
+  loadDone: boolean;
+  pStart: number;
+  pScroll: number;
+  isPullDown: boolean;
+  isStart: boolean;
+  videoComment: Array<IComment>;
+}
+class Detail extends Component<IDetailProps, State> {
+  constructor(props: IDetailProps) {
     super(props);
+
     this.state = {
-      videoDetail: null,
+      videoDetail: [],
       videoId: this.props.match.params.id,
       userName: localStorage.getItem("user") || "",
       iLike: "",
@@ -29,7 +50,8 @@ class Detail extends Component {
       pStart: 0,
       pScroll: 0,
       isPullDown: false,
-      isStart: false
+      isStart: false,
+      videoComment: []
     };
     this.pullDownStart = this.pullDownStart.bind(this);
     this.pullDownMove = this.pullDownMove.bind(this);
@@ -42,7 +64,7 @@ class Detail extends Component {
     this.prevPage = this.prevPage.bind(this);
   }
   async componentDidMount() {
-    let videoDetail;
+    let videoDetail: Array<Array<IVideoDetail>>;
     let { videoId, userName } = this.state;
     await singleVideoData(videoId).then(res => {
       videoDetail = res.data;
@@ -70,9 +92,9 @@ class Detail extends Component {
    * 处理用户点击喜欢和不喜欢按钮
    * @param {*} type 用户点击类型 1为喜欢 2位不喜欢
    */
-  handleSelLike(type, e) {
+  handleSelLike(type: string) {
     let { videoId, videoDetail, userName } = this.state;
-    let { name, star, img } = videoDetail[0][0];
+    let { name, star, img } = videoDetail && videoDetail[0][0];
     if (type === "needLogin") {
       this.props.showToast({
         icon: "fail",
@@ -81,7 +103,7 @@ class Detail extends Component {
       return;
     }
     postVideoLikeData(videoId, type, userName, name, img, star)
-      .then(res => {
+      .then(() => {
         this.props.showToast({
           message: "标记为" + (type === "1" ? "喜欢" : "不喜欢")
         });
@@ -105,7 +127,7 @@ class Detail extends Component {
   /**
    * 监听评论框
    */
-  handleCommentInput(e) {
+  handleCommentInput(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({
       commentVal: e.target.value
     });
@@ -121,8 +143,8 @@ class Detail extends Component {
       userName,
       videoComment
     } = this.state;
-    let { name } = videoDetail[0][0];
-    let avator = localStorage.getItem("avator");
+    let { name } = videoDetail && videoDetail[0][0];
+    let avator = localStorage.getItem("avator") || "";
     if (commentVal.trim() === "") {
       this.props.showToast({
         icon: "fail",
@@ -131,18 +153,19 @@ class Detail extends Component {
       return;
     }
     reportComment(videoId, userName, commentVal, name, avator)
-      .then(res => {
+      .then(() => {
         this.props.showToast({
           message: "评论成功"
         });
-        videoComment.push({
-          id: +new Date(),
-          userName,
-          date: this.date("yyyy-MM-dd hh:mm:ss"),
-          content: commentVal,
-          avator
-        });
-        this.goPage(Math.ceil(videoComment.length / 5));
+        videoComment &&
+          videoComment.push({
+            id: +new Date(),
+            userName,
+            date: this.date("yyyy-MM-dd hh:mm:ss"),
+            content: commentVal,
+            avator
+          });
+        videoComment && this.goPage(Math.ceil(videoComment.length / 5));
 
         this.setState(prevState => ({
           videoComment,
@@ -165,9 +188,10 @@ class Detail extends Component {
         }
       });
   }
-  date(fmt) {
+  date(fmt: string) {
     let date = new Date();
-    var o = {
+
+    var o: { [key: string]: any } = {
       "M+": date.getMonth() + 1, //月份
       "d+": date.getDate(), //日
       "h+": date.getHours(), //小时
@@ -191,34 +215,34 @@ class Detail extends Component {
         );
     return fmt;
   }
-  goPage(page) {
+  goPage(page: number) {
     this.setState({
       page
     });
   }
   nextPage() {
-    this.setState(prevState => ({
+    this.setState((prevState: { page: number }) => ({
       page: ++prevState.page
     }));
   }
   prevPage() {
-    this.setState(prevState => ({
+    this.setState((prevState: { page: number }) => ({
       page: --prevState.page
     }));
   }
-  pullDownStart(e) {
+  pullDownStart(e: React.TouchEvent) {
     this.setState({
       pStart: e.touches[0].pageY,
       isStart: true
     });
   }
-  pullDownMove(e) {
+  pullDownMove(e: React.TouchEvent) {
     let pScroll = Math.ceil((e.touches[0].pageY - this.state.pStart) * 0.6);
     this.setState({
       pScroll
     });
   }
-  pullDownEnd(e) {
+  pullDownEnd(e: React.TouchEvent) {
     let pScroll = this.state.pScroll;
     this.setState({
       pScroll: 0,
@@ -263,7 +287,9 @@ class Detail extends Component {
             detail={videoDetail}
             comments={videoComment}
             commentVal={commentVal}
-            handleCommentInput={e => this.handleCommentInput(e)}
+            handleCommentInput={(e: React.ChangeEvent<HTMLInputElement>) =>
+              this.handleCommentInput(e)
+            }
             page={page}
             postComment={this.postComment}
           />
@@ -284,13 +310,17 @@ class Detail extends Component {
     );
   }
 }
-function mapStateToProps(state) {
+interface IRecipeProps {
+  toast: { isShow: Boolean; message: string; icon: string };
+  showToast: Function;
+}
+function mapStateToProps(state: IRecipeProps) {
   return {
     toast: state.toast
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch) {
   return {
     showToast: bindActionCreators(showToast, dispatch)
   };
