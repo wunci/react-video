@@ -285,6 +285,7 @@ class Me extends Component<IMeProps, IMeState> {
   }
   logout() {
     localStorage.clear();
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
     this.props.showToast({
       message: "退出成功"
     });

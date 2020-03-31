@@ -59,9 +59,9 @@ class Login extends Component<ILoginProps, ILoginState> {
   }
   inputChange(e: React.ChangeEvent<HTMLInputElement>) {
     let target = e.target;
-    this.setState({
+    this.setState(({
       [target.name]: target.value
-    } as any);
+    } as unknown) as Pick<ILoginState, keyof ILoginState>);
   }
   submit() {
     let { userName, yzm, yzmData, password } = this.state;
