@@ -14,7 +14,7 @@ interface ILoginState {
   userName: string;
   password: string;
   yzm: string;
-  yzmData: string;
+  yzmData: string | Object;
   random: number;
   toast: {
     isShow: boolean;
@@ -49,7 +49,7 @@ class Login extends Component<ILoginProps, ILoginState> {
     this.changeYzm();
   }
   changeYzm() {
-    yzmChange().then((res: any) => {
+    yzmChange().then(res => {
       console.log("验证码", res.data);
       this.setState({
         yzmData: res.data,
